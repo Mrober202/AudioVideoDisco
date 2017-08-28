@@ -1,6 +1,7 @@
 function drawWave(waveCanvasCtx, analyser, bufferLength, dataArray) {
 
   requestAnimationFrame(function() {
+
     analyser.getByteTimeDomainData(dataArray);
     waveCanvasCtx.fillStyle = 'rgb(0, 0, 0)';
     waveCanvasCtx.fillRect(0, 0, canvas.width, canvas.height);
@@ -31,7 +32,7 @@ function drawWave(waveCanvasCtx, analyser, bufferLength, dataArray) {
     waveCanvasCtx.stroke();
   });
 
-  
+
 };
 
 module.exports = drawWave;

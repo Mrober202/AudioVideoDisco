@@ -73,8 +73,6 @@ var drawBar = __webpack_require__(2);
 // Create a MediaStreamAudioSourceNode
 // Feed the HTMLMediaElement into it
 
-
-
 function draw(visual) {
   if (navigator.mediaDevices) {
     console.log('getUserMedia supported.');
@@ -89,7 +87,7 @@ function draw(visual) {
           analyser.fftSize = 2048;
           var bufferLength = analyser.frequencyBinCount;
           var dataArray = new Uint8Array(bufferLength);
-          // analyser.getByteTimeDomainData(dataArray);
+          analyser.getByteTimeDomainData(dataArray);
           var biquadFilter = audioCtx.createBiquadFilter();
           biquadFilter.connect(analyser);
           biquadFilter.type = "lowshelf";
@@ -140,6 +138,7 @@ window.addEventListener('load', makeButtons)
 function drawWave(waveCanvasCtx, analyser, bufferLength, dataArray) {
 
   requestAnimationFrame(function() {
+
     analyser.getByteTimeDomainData(dataArray);
     waveCanvasCtx.fillStyle = 'rgb(0, 0, 0)';
     waveCanvasCtx.fillRect(0, 0, canvas.width, canvas.height);
@@ -170,7 +169,7 @@ function drawWave(waveCanvasCtx, analyser, bufferLength, dataArray) {
     waveCanvasCtx.stroke();
   });
 
-  
+
 };
 
 module.exports = drawWave;
