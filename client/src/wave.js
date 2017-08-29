@@ -8,7 +8,7 @@ function drawWave(analyser) {
 
     requestAnimationFrame(draw);
     analyser.getByteTimeDomainData(dataArray);
-    waveCanvasCtx.fillStyle = 'rgb(0, 0, 0)';
+    waveCanvasCtx.fillStyle = 'rgba(0, 0, 0, 0.2)';
     waveCanvasCtx.fillRect(0, 0, canvas.width, canvas.height);
 
     waveCanvasCtx.lineWidth = 3;
@@ -16,7 +16,7 @@ function drawWave(analyser) {
 
     waveCanvasCtx.beginPath();
 
-    var sliceWidth = canvas.width * 50.0 / bufferLength;
+    var sliceWidth = canvas.width * 3 / bufferLength;
     var x = 0;
 
     for (var i = 0; i < bufferLength; i++) {
@@ -29,11 +29,17 @@ function drawWave(analyser) {
       } else {
         waveCanvasCtx.lineTo(x, y);
       }
-      if (v > 1.7){
+      if (v > 1.5){
         waveCanvasCtx.strokeStyle = 'rgb(255, 0, 0)';
       }
-
-      x += sliceWidth;
+      // else if (v === 1.5){
+      //   waveCanvasCtx.strokeStyle = 'rgb(0, 255, 0)';
+      // }
+      else if (v > 1.3 && v < 1.5){
+        waveCanvasCtx.strokeStyle = 'rgb(30, 30, 255)';
+      }
+      
+      x += sliceWidth ;
     }
 
     waveCanvasCtx.lineTo(canvas.width, canvas.height);
