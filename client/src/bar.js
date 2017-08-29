@@ -1,26 +1,43 @@
-function drawBar(barCanvasCtx, analyser, bufferLength, dataArray) {
+function drawBar(analyser) {
+  var canvas = document.getElementById("canvas");
+  var barCanvasCtx = canvas.getContext("2d");
+  var bufferLength = analyser.frequencyBinCount;
+  var dataArray = new Uint8Array(bufferLength);
   var WIDTH = canvas.width;
   var HEIGHT = canvas.height;
 
-  requestAnimationFrame(function() {
-   analyser.getByteFrequencyData(dataArray);
+  function draw() {
 
-   barCanvasCtx.fillStyle = 'rgb(0, 0, 0)';
-   barCanvasCtx.fillRect(0, 0, WIDTH, HEIGHT);
+    requestAnimationFrame(draw);
+    analyser.getByteFrequencyData(dataArray);
 
-   var barWidth = (WIDTH / bufferLength) * 2.5;
-   var barHeight;
-   var x = 0;
+    barCanvasCtx.fillStyle = 'rgb(0, 0, 0)';
+    barCanvasCtx.fillRect(0, 0, WIDTH, HEIGHT);
 
-   for(var i = 0; i < bufferLength; i++) {
-    barHeight = dataArray[i];
+    var barWidth = (WIDTH / bufferLength) * 50;
+    var lowBarHeight;
+    var midBarHeight;
+    var highBarHeight;
+    var x = 0;
 
-    barCanvasCtx.fillStyle = 'rgb(' + (barHeight+80) + ', 200, 200)';
-    barCanvasCtx.fillRect(x,HEIGHT-barHeight/2,barWidth,barHeight);
+    for(var i = 0; i < bufferLength; i++) {
+      lowBarHeight = dataArray[i] * 2;
+      midBarHeight = dataArray[i] * 2.25;
+      highBarHeight = dataArray[i] * 2.5;
 
-    x += barWidth + 1;
-  }
-});
+      barCanvasCtx.fillStyle = 'rgb(255, 0, 0)';
+      barCanvasCtx.fillRect(x,HEIGHT-highBarHeight/2,barWidth,highBarHeight);
+
+      barCanvasCtx.fillStyle = 'rgb(255, 131, 0)';
+      barCanvasCtx.fillRect(x,HEIGHT-midBarHeight/2,barWidth,midBarHeight);
+
+      barCanvasCtx.fillStyle = 'rgb(0, 255, 0)';
+      barCanvasCtx.fillRect(x,HEIGHT-lowBarHeight/2,barWidth,lowBarHeight);
+
+      x += barWidth + 1;
+    }
+  };
+  draw();
   
 };
 

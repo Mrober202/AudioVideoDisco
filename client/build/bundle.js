@@ -79,33 +79,25 @@ function draw(visual) {
     navigator.mediaDevices.getUserMedia ({audio: true})
     .then(function(stream) {
         var audioCtx = new AudioContext();
+        // var audio = document.getElementById("audio")
         var source = audioCtx.createMediaStreamSource(stream);
         var analyser = audioCtx.createAnalyser();
          source.connect(analyser);
 
 
           analyser.fftSize = 2048;
-          var bufferLength = analyser.frequencyBinCount;
-          var dataArray = new Uint8Array(bufferLength);
-          analyser.getByteTimeDomainData(dataArray);
-          var biquadFilter = audioCtx.createBiquadFilter();
-          biquadFilter.connect(analyser);
-          biquadFilter.type = "lowshelf";
-          biquadFilter.frequency.value = 1000;
-          biquadFilter.gain.value = 25;
+        return analyser;
+      }).then(visual);
 
 
           // get canvas
           // get context
           // append canvas to body
-          var canvas = document.getElementById("canvas");
           var fullScreen = document.getElementById("fs-button");
           fullScreen.addEventListener("click", goFullScreen);
-          var canvasCtx = canvas.getContext("2d");
           document.body.appendChild(canvas);
-          visual(canvasCtx, analyser, bufferLength, dataArray);
 
-        })
+        }
   }
 
 
@@ -119,7 +111,7 @@ function draw(visual) {
     else if(canvas.mozRequestFullScreen) {
       canvas.mozRequestFullScreen();
     }
-  }
+  
 }
 
 function makeButtons() {
@@ -135,10 +127,15 @@ window.addEventListener('load', makeButtons)
 /* 1 */
 /***/ (function(module, exports) {
 
-function drawWave(waveCanvasCtx, analyser, bufferLength, dataArray) {
+function drawWave(analyser) {
+  var canvas = document.getElementById("canvas");
+  var waveCanvasCtx = canvas.getContext("2d");
+  var bufferLength = analyser.frequencyBinCount;
+  var dataArray = new Uint8Array(bufferLength);
 
-  requestAnimationFrame(function() {
+  function draw() {
 
+    requestAnimationFrame(draw);
     analyser.getByteTimeDomainData(dataArray);
     waveCanvasCtx.fillStyle = 'rgb(0, 0, 0)';
     waveCanvasCtx.fillRect(0, 0, canvas.width, canvas.height);
@@ -161,14 +158,17 @@ function drawWave(waveCanvasCtx, analyser, bufferLength, dataArray) {
       } else {
         waveCanvasCtx.lineTo(x, y);
       }
+      if (v > 1.7){
+        waveCanvasCtx.strokeStyle = 'rgb(255, 0, 0)';
+      }
 
       x += sliceWidth;
     }
 
-    waveCanvasCtx.lineTo(canvas.width, canvas.height / 2);
+    waveCanvasCtx.lineTo(canvas.width, canvas.height);
     waveCanvasCtx.stroke();
-  });
-
+  };
+  draw();
 
 };
 
@@ -178,29 +178,46 @@ module.exports = drawWave;
 /* 2 */
 /***/ (function(module, exports) {
 
-function drawBar(barCanvasCtx, analyser, bufferLength, dataArray) {
+function drawBar(analyser) {
+  var canvas = document.getElementById("canvas");
+  var barCanvasCtx = canvas.getContext("2d");
+  var bufferLength = analyser.frequencyBinCount;
+  var dataArray = new Uint8Array(bufferLength);
   var WIDTH = canvas.width;
   var HEIGHT = canvas.height;
 
-  requestAnimationFrame(function() {
-   analyser.getByteFrequencyData(dataArray);
+  function draw() {
 
-   barCanvasCtx.fillStyle = 'rgb(0, 0, 0)';
-   barCanvasCtx.fillRect(0, 0, WIDTH, HEIGHT);
+    requestAnimationFrame(draw);
+    analyser.getByteFrequencyData(dataArray);
 
-   var barWidth = (WIDTH / bufferLength) * 2.5;
-   var barHeight;
-   var x = 0;
+    barCanvasCtx.fillStyle = 'rgb(0, 0, 0)';
+    barCanvasCtx.fillRect(0, 0, WIDTH, HEIGHT);
 
-   for(var i = 0; i < bufferLength; i++) {
-    barHeight = dataArray[i];
+    var barWidth = (WIDTH / bufferLength) * 50;
+    var lowBarHeight;
+    var midBarHeight;
+    var highBarHeight;
+    var x = 0;
 
-    barCanvasCtx.fillStyle = 'rgb(' + (barHeight+80) + ', 200, 200)';
-    barCanvasCtx.fillRect(x,HEIGHT-barHeight/2,barWidth,barHeight);
+    for(var i = 0; i < bufferLength; i++) {
+      lowBarHeight = dataArray[i] * 2;
+      midBarHeight = dataArray[i] * 2.25;
+      highBarHeight = dataArray[i] * 2.5;
 
-    x += barWidth + 1;
-  }
-});
+      barCanvasCtx.fillStyle = 'rgb(255, 0, 0)';
+      barCanvasCtx.fillRect(x,HEIGHT-highBarHeight/2,barWidth,highBarHeight);
+
+      barCanvasCtx.fillStyle = 'rgb(255, 131, 0)';
+      barCanvasCtx.fillRect(x,HEIGHT-midBarHeight/2,barWidth,midBarHeight);
+
+      barCanvasCtx.fillStyle = 'rgb(0, 255, 0)';
+      barCanvasCtx.fillRect(x,HEIGHT-lowBarHeight/2,barWidth,lowBarHeight);
+
+      x += barWidth + 1;
+    }
+  };
+  draw();
   
 };
 

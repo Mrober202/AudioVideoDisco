@@ -10,33 +10,25 @@ function draw(visual) {
     navigator.mediaDevices.getUserMedia ({audio: true})
     .then(function(stream) {
         var audioCtx = new AudioContext();
+        // var audio = document.getElementById("audio")
         var source = audioCtx.createMediaStreamSource(stream);
         var analyser = audioCtx.createAnalyser();
          source.connect(analyser);
 
 
           analyser.fftSize = 2048;
-          var bufferLength = analyser.frequencyBinCount;
-          var dataArray = new Uint8Array(bufferLength);
-          analyser.getByteTimeDomainData(dataArray);
-          var biquadFilter = audioCtx.createBiquadFilter();
-          biquadFilter.connect(analyser);
-          biquadFilter.type = "lowshelf";
-          biquadFilter.frequency.value = 1000;
-          biquadFilter.gain.value = 25;
+        return analyser;
+      }).then(visual);
 
 
           // get canvas
           // get context
           // append canvas to body
-          var canvas = document.getElementById("canvas");
           var fullScreen = document.getElementById("fs-button");
           fullScreen.addEventListener("click", goFullScreen);
-          var canvasCtx = canvas.getContext("2d");
           document.body.appendChild(canvas);
-          visual(canvasCtx, analyser, bufferLength, dataArray);
 
-        })
+        }
   }
 
 
@@ -50,7 +42,7 @@ function draw(visual) {
     else if(canvas.mozRequestFullScreen) {
       canvas.mozRequestFullScreen();
     }
-  }
+  
 }
 
 function makeButtons() {

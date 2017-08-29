@@ -1,7 +1,12 @@
-function drawWave(waveCanvasCtx, analyser, bufferLength, dataArray) {
+function drawWave(analyser) {
+  var canvas = document.getElementById("canvas");
+  var waveCanvasCtx = canvas.getContext("2d");
+  var bufferLength = analyser.frequencyBinCount;
+  var dataArray = new Uint8Array(bufferLength);
 
-  requestAnimationFrame(function() {
+  function draw() {
 
+    requestAnimationFrame(draw);
     analyser.getByteTimeDomainData(dataArray);
     waveCanvasCtx.fillStyle = 'rgb(0, 0, 0)';
     waveCanvasCtx.fillRect(0, 0, canvas.width, canvas.height);
@@ -24,14 +29,17 @@ function drawWave(waveCanvasCtx, analyser, bufferLength, dataArray) {
       } else {
         waveCanvasCtx.lineTo(x, y);
       }
+      if (v > 1.7){
+        waveCanvasCtx.strokeStyle = 'rgb(255, 0, 0)';
+      }
 
       x += sliceWidth;
     }
 
-    waveCanvasCtx.lineTo(canvas.width, canvas.height / 2);
+    waveCanvasCtx.lineTo(canvas.width, canvas.height);
     waveCanvasCtx.stroke();
-  });
-
+  };
+  draw();
 
 };
 
