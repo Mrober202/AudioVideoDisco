@@ -7,11 +7,10 @@ function drawBar(analyser) {
   var HEIGHT = canvas.height;
 
   function draw() {
-
     requestAnimationFrame(draw);
     analyser.getByteFrequencyData(dataArray);
 
-    barCanvasCtx.fillStyle = 'rgb(0, 0, 0)';
+    barCanvasCtx.fillStyle = 'rgba(0, 0, 0, 0.1)';
     barCanvasCtx.fillRect(0, 0, WIDTH, HEIGHT);
 
     var barWidth = (WIDTH / bufferLength) * 50;
